@@ -1,0 +1,193 @@
+# baseURI: http://governance.data.gov.au/def/dpr
+# imports: http://purl.org/dc/elements/1.1/
+# imports: http://purl.org/linked-data/registry
+# imports: http://www.w3.org/ns/prov-o
+# imports: https://www.w3.org/ns/dcat.ttl
+
+@prefix : <http://governance.data.gov.au/def/dpr#> .
+@prefix cc: <http://creativecommons.org/ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dpn: <http://governance.data.gov.au/def/dpn#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix reg: <http://purl.org/linked-data/registry#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://governance.data.gov.au/def/dpr>
+  rdf:type owl:Ontology ;
+  cc:license "<http://creativecommons.org/licenses/by/4.0/>"^^xsd:string ;
+  <http://example.org/file1#preferredNamespacePrefix> "dpr"^^xsd:string ;
+  dc:creator "Nicholas Car <nicholas.car@ga.gov.au>"^^xsd:string ;
+  dc:date "2016-05-01"^^xsd:date ;
+  dc:subject "Linked Data management"@en ;
+  dc:title "Data Provider Register ontology"^^xsd:string ;
+  rdfs:comment "This ontology is a development of the Data Provider Node ontology. It is designed to allow organisations (agencies, groups, communities) publishing datasets, data web services and reference metadata to indicate the locations of their registers of them"^^xsd:string ;
+  owl:imports dc: ;
+  owl:imports <http://purl.org/linked-data/registry> ;
+  owl:imports <http://www.w3.org/ns/prov-o> ;
+  owl:imports <https://www.w3.org/ns/dcat.ttl> ;
+  owl:priorVersion <http://purl.org/dpn> ;
+  owl:versionIRI <http://governance.data.gov.au/def/dpr/v1> ;
+.
+:AgentRegister
+  rdf:type owl:Class ;
+  rdfs:comment "An AgentRegister is a reg:Register class that can only contain items of class prov:Agent."@en ;
+  rdfs:label "Agent Register"@en ;
+  rdfs:subClassOf :DprTypedRegister ;
+  owl:disjointWith :DatasetRegister ;
+  owl:disjointWith :ServicesRegister ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:hasValue prov:Agent ;
+      owl:onProperty reg:containedItemClass ;
+    ] ;
+.
+:DataProviderRegister
+  rdf:type owl:Class ;
+  reg:containedItemClass reg:Register ;
+  rdfs:comment "A Data Provider Register must have one and only one subregister of type reg:DatasetRegister."@en ;
+  rdfs:label "Data Provider Register"@en ;
+  rdfs:subClassOf reg:FederatedRegister ;
+  owl:disjointWith :AgentRegister ;
+  owl:disjointWith :DatasetRegister ;
+  owl:disjointWith :ServicesRegister ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :datasetSubregister ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :agentSubregister ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :serviceSubregister ;
+    ] ;
+.
+:DatasetRegister
+  rdf:type owl:Class ;
+  reg:containedItemClass <http://www.w3.org/ns/dcat#Dataset> ;
+  rdfs:comment "A DatasetRegister is a reg:Register class that can only contain items of class dcat:Dataset."@en ;
+  rdfs:label "Dataset Register"@en ;
+  rdfs:subClassOf :DprTypedRegister ;
+  owl:disjointWith :DataProviderRegister ;
+  owl:disjointWith :ServicesRegister ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:hasValue <http://www.w3.org/ns/dcat#Dataset> ;
+      owl:onProperty reg:containedItemClass ;
+    ] ;
+.
+:DprTypedRegister
+  rdf:type owl:Class ;
+  rdfs:comment "A DprTyped register is a register containing items of one of the following types of special importance to DPRs: dcat:Dataset, prov:Agent & dpr:WebService. It may or may not be a functional Linked Data register but must indicate whether it is or not."@en ;
+  rdfs:label "DprTyped register"@en ;
+  rdfs:subClassOf reg:Register ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :functionsAsALinkedDataRegister ;
+    ] ;
+.
+:PersonRegister
+  rdf:type owl:Class ;
+  rdfs:comment "A PersonRegister is a reg:Register class that can only contain items of class prov:Person."@en ;
+  rdfs:label "Person Register"@en ;
+  rdfs:subClassOf :AgentRegister ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:hasValue prov:Person ;
+      owl:onProperty reg:containedItemClass ;
+    ] ;
+.
+:ServicesRegister
+  rdf:type owl:Class ;
+  rdfs:comment "A ServicesRegister is a reg:Register class that can only contain items of class dpr:WebService."@en ;
+  rdfs:label "Services Register"@en ;
+  rdfs:subClassOf :DprTypedRegister ;
+  owl:disjointWith :DataProviderRegister ;
+  owl:disjointWith :DatasetRegister ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:hasValue :WebService ;
+      owl:onProperty reg:containedItemClass ;
+    ] ;
+.
+:WebService
+  rdf:type owl:Class ;
+  rdfs:comment "A Web Service through which data may be accessed"@en ;
+  rdfs:label "Web Service"@en ;
+  rdfs:subClassOf <http://www.w3.org/ns/dcat#Distribution> ;
+  owl:disjointWith <http://www.w3.org/ns/dcat#Dataset> ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :webServiceEndpoint ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:hasValue <http://www.w3.org/ns/dcat#Dataset> ;
+      owl:onProperty :isDistributionOf ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :isDistributionOf ;
+    ] ;
+.
+:agentSubregister
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :DataProviderRegister ;
+  rdfs:label "agent subregister"^^xsd:string ;
+  rdfs:range :AgentRegister ;
+  rdfs:subPropertyOf reg:subregister ;
+.
+:datasetSubregister
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :DataProviderRegister ;
+  rdfs:label "dataset subregister"^^xsd:string ;
+  rdfs:range :DatasetRegister ;
+  rdfs:subPropertyOf reg:subregister ;
+.
+:functionsAsALinkedDataRegister
+  rdf:type rdf:Property ;
+  rdfs:domain reg:Register ;
+  rdfs:label "Functions as a Linked Data register"^^xsd:string ;
+  rdfs:range xsd:boolean ;
+.
+:isDistributionOf
+  rdf:type owl:InverseFunctionalProperty ;
+  rdfs:domain <http://www.w3.org/ns/dcat#Distribution> ;
+  rdfs:label "is distribution of"^^xsd:string ;
+  rdfs:range <http://www.w3.org/ns/dcat#Dataset> ;
+  owl:inverseOf <http://www.w3.org/ns/dcat#distribution> ;
+.
+:personSubregister
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "person subregister"^^xsd:string ;
+  rdfs:range prov:Person ;
+  rdfs:subPropertyOf :agentSubregister ;
+.
+:serviceSubregister
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :DataProviderRegister ;
+  rdfs:label "service subregister"^^xsd:string ;
+  rdfs:range :ServicesRegister ;
+  rdfs:subPropertyOf reg:subregister ;
+.
+:webServiceEndpoint
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "A URI endpoint to access a Web Service from"@en ;
+  rdfs:domain :WebService ;
+  rdfs:label "endpoint"@en ;
+  rdfs:subPropertyOf <http://www.w3.org/ns/dcat#accessURL> ;
+.
+<http://www.w3.org/ns/dcat#distribution>
+  owl:inverseOf :isDistributionOf ;
+.

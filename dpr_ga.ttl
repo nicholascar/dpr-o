@@ -1,0 +1,16 @@
+@prefix : <http://data.gov.au/dpr/ga> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dpr: <http://governance.data.gov.au/def/dpr#> .
+
+:
+	a dpr:DataProviderRegister;
+	dpr:datasetSubregister <http://ecat.ga.gov.au/geonetwork/srv/eng/csw>
+.
+
+<http://ecat.ga.gov.au/geonetwork/srv/eng/csw>
+	a dpr:DatasetRegister;
+	rdfs:label "eCat, GA's Dataset Catalogue"@en;
+	dpr:functionsAsALinkedDataRegister "false"^^xsd:boolean
+.
+	
